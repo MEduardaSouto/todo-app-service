@@ -11,7 +11,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Cria uma lista
-app.post('/listas', (req, res) => {
+app.post('/list', (req, res) => {
   const { name, itens } = req.body;
 
   // Falta a lógica para persistir a lista no banco de dados
@@ -22,7 +22,7 @@ app.post('/listas', (req, res) => {
 });
 
 // Recupera todas as listas
-app.get('/listas', (req, res) => {
+app.get('/list', (req, res) => {
   // Falta a lógica para recuperar todas as listas do banco de dados
 
   // Exemplo de como recuperar todas as listas
@@ -32,7 +32,7 @@ app.get('/listas', (req, res) => {
 });
 
 // Recupera uma lista específica
-app.get('/listas/:id', (req, res) => {
+app.get('/list/:id', (req, res) => {
   const id = req.params.id;
 
   // Falta a lógica para recuperar a lista com o ID fornecido do banco de dados
@@ -43,7 +43,7 @@ app.get('/listas/:id', (req, res) => {
 });
 
 // Atualiza uma lista
-app.put('/listas/:id', (req, res) => {
+app.put('/list/:id', (req, res) => {
   const id = req.params.id;
   const { name, itens } = req.body;
 
@@ -55,7 +55,7 @@ app.put('/listas/:id', (req, res) => {
 });
 
 // Excluir uma lista
-app.delete('/listas/:id', (req, res) => {
+app.delete('/list/:id', (req, res) => {
   const id = req.params.id;
 
   // Falta a lógica para excluir a lista com o ID fornecido do banco de dados
