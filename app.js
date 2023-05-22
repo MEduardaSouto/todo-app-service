@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const client = require('./db').default;
 const List = require('./api/List');
 const Item = require('./api/Item');
