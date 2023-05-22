@@ -6,6 +6,7 @@ const Item = require('./api/Item');
 const User = require('./api/User');
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 
 // Cria uma lista
