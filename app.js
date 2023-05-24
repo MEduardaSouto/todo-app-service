@@ -1,24 +1,31 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const client = require('./db').default;
+const client = require('./db');
 const List = require('./api/List');
 const Item = require('./api/Item');
 const User = require('./api/User');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
 // Cria uma lista
-app.post('/list', (req, res) => {
-  const { name, itens } = req.body;
+app.post('/list', async (req, res) => {
+  const { name } = req.body;
 
-  // Falta a lógica para persistir a lista no banco de dados
+  try {
+    // Insere a nova lista no banco de dados
+    const id = uuidv4();
+    const result = await client.query('INSERT INTO lists (id, name) VALUES ($1, $2) RETURNING *', [id, name]);
+    const novaLista = result.rows[0];
 
-  // Exemplo de código para inserção de uma nova lista
-  const novaLista = new List(1, name, itens);
-  res.json(novaLista);
+    res.json(novaLista);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao criar a nova lista' });
+  }
 });
 
 // Recupera todas as listas
