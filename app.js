@@ -29,14 +29,19 @@ app.post('/list', async (req, res) => {
 });
 
 // Recupera todas as listas
-app.get('/list', (req, res) => {
-  // Falta a lógica para recuperar todas as listas do banco de dados
+app.get('/list', async (req, res) => {
+  try {
+    // Recupera todas as listas do banco de dados
+    const result = await client.query('SELECT * FROM lists');
+    const listas = result.rows;
 
-  // Exemplo de como recuperar todas as listas
-  const lista1 = new List(1, 'Lista da feira', []);
-  const lista2 = new List(2, 'Lista de roupas', []);
-  res.json([lista1, lista2]);
+    res.json(listas);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao recuperar as listas' });
+  }
 });
+
 
 // Recupera uma lista específica
 app.get('/list/:id', (req, res) => {
