@@ -20,7 +20,7 @@ app.post('/list', async (req, res) => {
     const id = uuidv4();
     const result = await client.query('INSERT INTO lists (id, name) VALUES ($1, $2) RETURNING *', [id, name]);
     const novaLista = result.rows[0];
-
+    
     res.json(novaLista);
   } catch (error) {
     console.error(error);
@@ -34,11 +34,26 @@ app.get('/list', async (req, res) => {
     // Recupera todas as listas do banco de dados
     const result = await client.query('SELECT * FROM lists');
     const listas = result.rows;
-
+    
     res.json(listas);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao recuperar as listas' });
+  }
+});
+
+// Excluir uma lista
+app.delete('/list/:id', async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    // Exclui a lista com o ID fornecido do banco de dados
+    await client.query('DELETE FROM lists WHERE id = $1', [id]);
+
+    res.sendStatus(204); // Resposta de sucesso
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao excluir a lista' });
   }
 });
 
@@ -66,14 +81,6 @@ app.put('/list/:id', (req, res) => {
   res.json(listaAtualizada);
 });
 
-// Excluir uma lista
-app.delete('/list/:id', (req, res) => {
-  const id = req.params.id;
-
-  // Falta a lógica para excluir a lista com o ID fornecido do banco de dados
-
-  res.sendStatus(204); // Resposta de sucesso 
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
