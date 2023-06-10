@@ -5,28 +5,10 @@ const client = require('./db');
 const List = require('./api/List');
 const Item = require('./api/Item');
 const User = require('./api/User');
-const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-
-// Cria uma lista
-app.post('/list', async (req, res) => {
-  const { name } = req.body;
-
-  try {
-    // Insere a nova lista no banco de dados
-    const id = uuidv4();
-    const result = await client.query('INSERT INTO lists (id, name) VALUES ($1, $2) RETURNING *', [id, name]);
-    const novaLista = result.rows[0];
-    
-    res.json(novaLista);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro ao criar a nova lista' });
-  }
-});
 
 // Recupera todas as listas
 app.get('/list', async (req, res) => {
@@ -39,6 +21,26 @@ app.get('/list', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao recuperar as listas' });
+  }
+});
+
+// Cria uma lista
+app.post('/list', async (req, res) => {
+  const { id, name } = req.body;
+  console.log(name)
+
+  try {
+    // Insere a nova lista no banco de dados
+    const result = await client.query('INSERT INTO lists (id, name) VALUES ($1, $2) RETURNING *', [id, name]);
+    const novaListaDB = result.rows[0];
+
+    // Cria uma instância da classe Lista com os dados da nova lista
+    const novaLista = new List(novaListaDB.id, novaListaDB.name, []);
+
+    res.json(novaLista);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao criar a nova lista' });
   }
 });
 
@@ -57,28 +59,75 @@ app.delete('/list/:id', async (req, res) => {
   }
 });
 
+// // Atualiza uma lista
+// app.put('/list/:id', async (req, res) => {
+//   const id = req.params.id;
+//   const { name, itens } = req.body;
 
-// Recupera uma lista específica
-app.get('/list/:id', (req, res) => {
+//   try {
+//     // Atualiza a lista com o ID fornecido no banco de dados
+//     await client.query('UPDATE lists SET name = $1, itens = $2 WHERE id = $3', [name, itens, id]);
+
+//     // Cria uma instância da classe Lista com os dados atualizados
+//     const listaAtualizada = new List(id, name, itens);
+
+//     res.json(listaAtualizada);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Erro ao atualizar a lista' });
+//   }
+// });
+
+
+
+
+// Recupera os itens de uma lista específica
+app.get('/itens/:id', async (req, res) => {
   const id = req.params.id;
 
-  // Falta a lógica para recuperar a lista com o ID fornecido do banco de dados
+  try {
+    // Recupera os itens da lista com o ID fornecido do banco de dados
+    const result = await client.query('SELECT * FROM items WHERE list_id = $1', [id]);
+    const itens = result.rows;
 
-  // Exemplo de como recuperar uma lista por ID
-  const lista = new List(id, 'Nome da lista', []);
-  res.json(lista);
+    res.json(itens);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao recuperar os itens da lista' });
+  }
 });
 
-// Atualiza uma lista
-app.put('/list/:id', (req, res) => {
+// Cria um item em uma lista específica
+app.post('/list/:listId/item', async (req, res) => {
+  const listId = req.params.listId;
+  const { id, name } = req.body;
+
+  try {
+    // Insere o novo item no banco de dados
+    await client.query('INSERT INTO items (id, name, list_id) VALUES ($1, $2, $3)', [id, name, listId]);
+
+    // Cria uma instância da classe Item com os dados do novo item
+    const novoItem = new Item(id, name, listId);
+
+    res.json(novoItem);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao criar o novo item' });
+  }
+});
+
+app.delete('/item/:id', async (req, res) => {
   const id = req.params.id;
-  const { name, itens } = req.body;
 
-  // Falta a lógica para atualizar a lista com o ID fornecido no banco de dados
+  try {
+    // Exclui a lista com o ID fornecido do banco de dados
+    await client.query('DELETE FROM items WHERE id = $1', [id]);
 
-  // Exemplo de como atualizar uma lista
-  const listaAtualizada = new List(id, name, itens);
-  res.json(listaAtualizada);
+    res.sendStatus(204); // Resposta de sucesso
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao excluir a item' });
+  }
 });
 
 

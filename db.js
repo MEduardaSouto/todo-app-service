@@ -7,18 +7,25 @@ const client = new Client({
 
 client.connect();
 
+// No arquivo de conexão do banco de dados (db.js)
 client.query(`
   CREATE TABLE IF NOT EXISTS lists (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    itens JSONB
+    name VARCHAR(255) NOT NULL
   );
 `, (err) => {
-  if (err) {
-    console.error('Erro ao criar tabela lists:', err);
-  } else {
-    console.log('Tabela lists criada com sucesso');
-  }
+  console.error('Erro ao criar tabela lists:', err)
 });
+
+client.query(`
+  CREATE TABLE IF NOT EXISTS items (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    list_id UUID REFERENCES lists(id) ON DELETE CASCADE
+  );
+`, (err) => {
+  console.error('Erro ao criar tabela itens:', err)
+});
+
 
 module.exports = client;
