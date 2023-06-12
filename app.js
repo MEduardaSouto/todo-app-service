@@ -27,7 +27,6 @@ app.get('/list', async (req, res) => {
 // Cria uma lista
 app.post('/list', async (req, res) => {
   const { id, name } = req.body;
-  console.log(name)
 
   try {
     // Insere a nova lista no banco de dados
@@ -58,26 +57,6 @@ app.delete('/list/:id', async (req, res) => {
     res.status(500).json({ error: 'Erro ao excluir a lista' });
   }
 });
-
-// // Atualiza uma lista
-// app.put('/list/:id', async (req, res) => {
-//   const id = req.params.id;
-//   const { name, itens } = req.body;
-
-//   try {
-//     // Atualiza a lista com o ID fornecido no banco de dados
-//     await client.query('UPDATE lists SET name = $1, itens = $2 WHERE id = $3', [name, itens, id]);
-
-//     // Cria uma instância da classe Lista com os dados atualizados
-//     const listaAtualizada = new List(id, name, itens);
-
-//     res.json(listaAtualizada);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Erro ao atualizar a lista' });
-//   }
-// });
-
 
 
 
@@ -127,6 +106,22 @@ app.delete('/item/:id', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao excluir a item' });
+  }
+});
+
+// Atualiza o status de isChecked de um item
+app.put('/item/:id', async (req, res) => {
+  const id = req.params.id;
+  const { isChecked } = req.body;
+
+  try {
+    // Atualiza o status de isChecked do item com o ID fornecido no banco de dados
+    await client.query('UPDATE items SET is_checked = $1 WHERE id = $2', [isChecked, id]);
+
+    res.sendStatus(200); // Resposta de sucesso
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao atualizar o status do item' });
   }
 });
 
