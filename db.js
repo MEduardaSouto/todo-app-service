@@ -11,7 +11,8 @@ client.connect();
 client.query(`
   CREATE TABLE IF NOT EXISTS users (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL
+    nome VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL
   );
 `, (err) => {
   console.error('Erro ao criar tabela usuarios:', err)
