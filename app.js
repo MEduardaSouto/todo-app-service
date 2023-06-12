@@ -48,11 +48,11 @@ app.post('/user', async (req, res) => {
 
 // Autentica um usuário
 app.post('/user/login', async (req, res) => {
-  const { name, password } = req.body;
+  const { username, password } = req.body;
 
   try {
     // Verifica se o usuário existe no banco de dados e se a senha está correta
-    const result = await client.query('SELECT * FROM users WHERE name = $1 AND password = $2', [name, password]);
+    const result = await client.query('SELECT * FROM users WHERE name = $1 AND password = $2', [username, password]);
     const usuario = result.rows[0];
 
     if (!usuario) {
