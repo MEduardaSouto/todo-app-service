@@ -181,7 +181,7 @@ app.get('/user/:userId/list/:listId/items', async (req, res) => {
 app.post('/user/:userId/list/:listId/item', async (req, res) => {
   const userId = req.params.userId;
   const listId = req.params.listId;
-  const { id, name } = req.body;
+  const { id, name, value } = req.body;
 
   try {
     // Verifica se a lista pertence ao usuário antes de criar o item
@@ -193,10 +193,10 @@ app.post('/user/:userId/list/:listId/item', async (req, res) => {
     }
 
     // Insere o novo item no banco de dados associado à lista e ao usuário correspondentes
-    await client.query('INSERT INTO items (id, name, list_id) VALUES ($1, $2, $3)', [id, name, listId]);
+    await client.query('INSERT INTO items (id, name, value, list_id) VALUES ($1, $2, $3, $4)', [id, name, value, listId]);
 
     // Cria uma instância da classe Item com os dados do novo item
-    const novoItem = new Item(id, name, listId);
+    const novoItem = new Item(id, name, value, listId);
 
     res.json(novoItem);
   } catch (error) {
